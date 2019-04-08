@@ -9,14 +9,14 @@ from torchvision import transforms
 from torch.autograd import Variable
 from torch.optim import lr_scheduler
 
-from loss import FocalLoss
+from focal_loss import FocalLoss
 from retinanet import RetinaNet
 from datasets import CocoDetection
 
 
 train_loader = torch.utils.data.DataLoader(
-    CocoDetection(root="./datasets/COCO/train2017",
-                  annFile="./datasets/COCO/annotations/instances_train2017.json",
+    CocoDetection(root="./datasets/coco/images/sample2017",
+                  annFile="./datasets/coco/annotations/instances_sample2017.json",
                   transform=transforms.Compose([
                       transforms.ToTensor(),
                       # normalized because of the pretrained imagenet
@@ -65,17 +65,17 @@ def train(model, cuda=False):
             class_targets.cuda()
 
         images = Variable(images)
-        # box_predictions = Variable(box_targets)
-        # class_predictions = Variable(class_targets)
-        box_predictions, classes_predictions = model(images)
+
+        box_predictions, class_predictions = model(images)
         
-        loss = criterion(box_predictions, box_targets, class_predictions, class_targets)
-        # loss.backwards()
+        regression_loss = criterion(box_predictions, box_targets)
+        classification_loss = criterion(class_predictions, class_targets)
+
+        loss = regression_loss.mean() + classification_loss.mean()
+
         loss.backward()
 
         average_loss += loss[0]
-
-        # boxes, classes = model(images)
 
         optimizer.step()
 

@@ -37,9 +37,10 @@ class CocoDetection(data.Dataset):
         coco = self.coco
         img_id = self.ids[index]
         ann_ids = coco.getAnnIds(imgIds=img_id)
-        target = coco.loadAnns(ann_ids)
+        coco_target = coco.loadAnns(ann_ids)
 
-        target = torch.unsqueeze(torch.Tensor(target[0]['bbox']), -1)
+        target = torch.unsqueeze(torch.Tensor(coco_target[0]['bbox']), -1)
+        label =  torch.unsqueeze(torch.Tensor([coco_target[0]['category_id']]), -1)
 
         path = coco.loadImgs(img_id)[0]['file_name']
 
@@ -51,7 +52,7 @@ class CocoDetection(data.Dataset):
         if self.target_transform is not None:
             target = self.target_transform(target)
 
-        return img, target
+        return img, target, label
 
     def __len__(self):
         return len(self.ids)

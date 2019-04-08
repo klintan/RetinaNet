@@ -1,2 +1,7 @@
 ./__pycache__
 *.pyc
+.Python
+.idea/
+bin/
+include/
+lib/

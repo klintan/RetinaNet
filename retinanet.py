@@ -90,8 +90,8 @@ class SubNet(nn.Module):
     def _output_layer_init(self, tensor, pi=0.01):
         fill_constant = - math.log((1 - pi) / pi)
 
-        if isinstance(tensor, Variable):
-            self._output_layer_init(tensor.data)
+        #if isinstance(tensor, Variable):
+        #    self._output_layer_init(tensor.data)
 
         return tensor.fill_(fill_constant)
 
